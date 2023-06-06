@@ -39,9 +39,9 @@ public class ConversationUtils
      * @param user User who is targeted with current confirmation.
      */
     public static void createConfirmation(Consumer<Boolean> consumer,
-        User user,
-        @NotNull String question,
-        @Nullable String successMessage)
+                                          User user,
+                                          @NotNull String question,
+                                          @Nullable String successMessage)
     {
         ValidatingPrompt confirmationPrompt = new ValidatingPrompt()
         {
@@ -57,9 +57,9 @@ public class ConversationUtils
             {
                 // Get valid strings from translations
                 String validEntry = user.getTranslation(Constants.CONVERSATIONS + "confirm-string") +
-                    "," + user.getTranslation(Constants.CONVERSATIONS + "deny-string") +
-                    "," + user.getTranslation(Constants.CONVERSATIONS + "exit-string") +
-                    "," + user.getTranslation(Constants.CONVERSATIONS + "cancel-string");
+                        "," + user.getTranslation(Constants.CONVERSATIONS + "deny-string") +
+                        "," + user.getTranslation(Constants.CONVERSATIONS + "exit-string") +
+                        "," + user.getTranslation(Constants.CONVERSATIONS + "cancel-string");
 
                 // Split and check if they exist in valid entries.
                 String[] accepted = validEntry.toLowerCase().replaceAll("\\s", "").split(",");
@@ -93,7 +93,7 @@ public class ConversationUtils
 
                     // Return message about failed operation.
                     return ConversationUtils.endMessagePrompt(
-                        user.getTranslation(Constants.CONVERSATIONS + "cancelled"));
+                            user.getTranslation(Constants.CONVERSATIONS + "cancelled"));
                 }
             }
 
@@ -112,12 +112,12 @@ public class ConversationUtils
         };
 
         new ConversationFactory(BentoBox.getInstance()).
-            withPrefix(context -> user.getTranslation(Constants.CONVERSATIONS + "prefix")).
-            withFirstPrompt(confirmationPrompt).
-            withLocalEcho(false).
-            withTimeout(90).
-            buildConversation(user.getPlayer()).
-            begin();
+                withPrefix(context -> user.getTranslation(Constants.CONVERSATIONS + "prefix")).
+                withFirstPrompt(confirmationPrompt).
+                withLocalEcho(false).
+                withTimeout(90).
+                buildConversation(user.getPlayer()).
+                begin();
     }
 
 
@@ -129,10 +129,10 @@ public class ConversationUtils
      * @param question Message that will be displayed in chat when player triggers conversion.
      */
     public static void createNumericInput(Consumer<Number> consumer,
-        @NotNull User user,
-        @NotNull String question,
-        Number minValue,
-        Number maxValue)
+                                          @NotNull User user,
+                                          @NotNull String question,
+                                          Number minValue,
+                                          Number maxValue)
     {
         // Create NumericPromt instance that will validate and process input.
         NumericPrompt numberPrompt = new NumericPrompt()
@@ -168,10 +168,13 @@ public class ConversationUtils
              */
             protected boolean isNumberValid(ConversationContext context, Number input)
             {
-                return input.doubleValue() >= minValue.doubleValue() &&
-                    input.doubleValue() <= maxValue.doubleValue();
-            }
+                // Check if the number is a whole number (its double value is the same as its long value)
+                boolean isWholeNumber = input.doubleValue() == input.longValue();
 
+                return isWholeNumber &&
+                        input.doubleValue() >= minValue.doubleValue() &&
+                        input.doubleValue() <= maxValue.doubleValue();
+            }
 
             /**
              * Optionally override this method to display an additional message if the
@@ -185,7 +188,7 @@ public class ConversationUtils
             protected String getInputNotNumericText(ConversationContext context, String invalidInput)
             {
                 return user.getTranslation(Constants.CONVERSATIONS + "numeric-only",
-                    Constants.PARAMETER_VALUE, invalidInput);
+                        Constants.PARAMETER_VALUE, invalidInput);
             }
 
 
@@ -201,9 +204,9 @@ public class ConversationUtils
             protected String getFailedValidationText(ConversationContext context, Number invalidInput)
             {
                 return user.getTranslation(Constants.CONVERSATIONS + "not-valid-value",
-                    Constants.PARAMETER_VALUE, invalidInput.toString(),
-                    Constants.PARAMETER_MIN, Double.toString(minValue.doubleValue()),
-                    Constants.PARAMETER_MAX, Double.toString(maxValue.doubleValue()));
+                        Constants.PARAMETER_VALUE, invalidInput.toString(),
+                        Constants.PARAMETER_MIN, Double.toString(minValue.doubleValue()),
+                        Constants.PARAMETER_MAX, Double.toString(maxValue.doubleValue()));
             }
 
 
